@@ -1,69 +1,33 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import "./styles/index.css";
+
+import Header from "./components/Header";
+import Home from "./components/Home";
+import Root from "./components/Root";
+import ChangeName from "./components/ChangeName";
+
+import Login from "./components/Login";
+import Logout from "./components/Logout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import Profile from "./components/Profile";
 
 function App() {
-  const [message, setMessage] = useState(null);
-  const [isFetching, setIsFetching] = useState(false);
-  const [url, setUrl] = useState('/api');
-
-  const fetchData = useCallback(() => {
-    fetch(url)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`status ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(json => {
-        setMessage(json.message);
-        setIsFetching(false);
-      }).catch(e => {
-        setMessage(`API call failed: ${e}`);
-        setIsFetching(false);
-      })
-  }, [url]);
-
-  useEffect(() => {
-    setIsFetching(true);
-    fetchData();
-  }, [fetchData]);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        { process.env.NODE_ENV === 'production' ?
-            <p>
-              This is a production build from create-react-app.
-            </p>
-          : <p>
-              Edit <code>src/App.js</code> and save to reload.
-            </p>
-        }
-        <p>{'« '}<strong>
-          {isFetching
-            ? 'Fetching message from API'
-            : message}
-        </strong>{' »'}</p>
-        <p><a
-          className="App-link"
-          href="https://github.com/mars/heroku-cra-node"
-        >
-          React + Node deployment on Heroku
-        </a></p>
-        <p><a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a></p>
-      </header>
-    </div>
-  );
+    <Router>
+      <Header />
 
+      <Routes>
+        <Route path="/" element={<Root />} />
+        <Route path="/changename" element={<ChangeName />} />
+        <Route path="/home" element={<ProtectedRoute component={Home} />} />
+        <Route path="/login/*" element={<Login />} />
+        <Route path="/logout/*" element={<Logout />} />
+        <Route path="/profile/" element={<Profile />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
